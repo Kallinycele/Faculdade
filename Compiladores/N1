@@ -1,0 +1,84 @@
+#Construa o analisador léxico para a linguagem ALGUMA (linguagem criada pelo prof. Dr. Daniel Lucrédio - UFSCar)
+
+import re
+
+token_patterns = [
+    (r'[a-zA-Z][a-zA-Z0-9]*', 'VARIAVEL'),                             # VARIAVEL
+    (r'SE', 'KW- SE'),                                                 # Palavra reservada "SE"
+    (r'ENTAO', 'KW- ENTAO'),                                           # Palavra reservada "ENTAO"
+    (r'ENQUANTO', 'KW- ENQUANTO'),                                     # Palavra reservada "ENQUANTO"
+    (r'FIM', 'KW- FIM'),                                               # Palavra reservada "FIM"
+    (r'LER', 'KW- LER'),                                               # Palavra reservada "LER"
+    (r'INICIO', 'KW- INICIO'),                                         # Palavra reservada "INICIO"
+    (r'IMPRIMIR', 'KW- IMPRIMIR'),                                     # Palavra reservada "IMPRIMIR"
+    (r'A', 'KW- A'),                                                   # Palavra reservada "A"
+    (r'ATRIBUIR', 'KW- ATRIBUIR'),                                     # Palavra reservada "ATRIBUIR"
+    (r'REAL', 'KW- REAL'),                                             # Palavra reservada "REAL"
+    (r'INTEIRO', 'KW- INTEIRO'),                                       # Palavra reservada "INTEIRO"
+    (r'ALGORITMO', 'KW- ALGORITMO'),                                   # Palavra reservada "ALGORITMO"
+    (r'DECLARACAO', 'KW- DECLARACAO'),                                 # Palavra reservada "DECLARACAO"
+    (r'\d+', 'NUMERO'),                                                # Números inteiros
+    (r'\(', 'ABRE_PARENTESES'),                                        # Parêntese esquerdo
+    (r'\)', 'FECHA_PARENTESES'),                                       # Parêntese direito
+    (r':', 'DELIMITADOR'),                                             # Delimitador
+    (r'\+', 'Operador aritmetico - MAIS'),                             # Operador aritmetico 
+    (r'-', 'Operador aritmetico - MENOS'),                             # Operador aritmetico
+    (r'\*', 'Operador aritmetico- VEZES'),                             # Operador aritmetico
+    (r'/', 'Operador aritmetico - DIVIDIDO'),                          # Operador aritmetico
+    (r'=', 'Operador relacional- IGUAL'),                              # Operador relacional
+    (r'<', 'Operador relacional- MENOR Q'),                            # Operador relacional
+    (r'>', 'Operador relacional- MAIOR Q'),                            # Operador relacional
+    (r'<=', 'Operador relacional- MENOR IGUAL'),                       # Operador relacional
+    (r'=>', 'Operador relacional- MAIOR IGUAL'),                       # Operador relacional
+    (r'E', 'Operador booleano'),                                       # Operador booleano
+    (r'OU', 'Operador booleano'),                                      # Operador booleano
+    (r'\s+', 'ESPACO_EM_BRANCO'),                                      # Espaços em branco
+]
+
+def analisar_exCodigo(exCodigo):
+    tokens = []
+    posicao = 0 
+    while exCodigo:
+        encontrado = False  
+        for padrao, tipo in token_patterns:
+            regex = re.compile('^' + padrao)
+            match = regex.match(exCodigo)
+            if match:
+                valor = match.group(0)
+                if tipo != 'ESPACO_EM_BRANCO' and tipo != 'COMENTARIO':
+                    tokens.append((tipo, valor))
+                exCodigo = exCodigo[len(valor):].lstrip()
+                posicao += len(valor)
+                encontrado = True 
+                break
+
+        if not encontrado:
+            proximo_espaco = exCodigo.find(' ')
+            if proximo_espaco == -1:
+                proximo_espaco = len(exCodigo)
+            token_invalido = exCodigo[:proximo_espaco]
+            tokens.append(('TOKEN_INVALIDO', token_invalido))  
+            posicao += len(token_invalido)  
+            exCodigo = exCodigo[len(token_invalido):].lstrip()  
+
+    return tokens
+
+exCodigo = """
+SE x = 5 ENTAO
+    y = 10
+    x+5 = y ##
+SENAO
+    y = 20
+FIM
+"""
+
+tokens = analisar_exCodigo(exCodigo)
+
+for tipo, valor in tokens:
+    if tipo == 'TOKEN_INVALIDO':
+        print(f'TOKEN INVALIDO: "{valor}"')
+    else:
+        print(f'Tipo: "{tipo}" --- Valor: "{valor}"')
+
+
+
