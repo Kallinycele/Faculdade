@@ -2,8 +2,8 @@
 
 import re
 
+# Definição das expressões regulares para tokens
 token_patterns = [
-    (r'[a-zA-Z][a-zA-Z0-9]*', 'VARIAVEL'),                             # VARIAVEL
     (r'SE', 'KW- SE'),                                                 # Palavra reservada "SE"
     (r'ENTAO', 'KW- ENTAO'),                                           # Palavra reservada "ENTAO"
     (r'ENQUANTO', 'KW- ENQUANTO'),                                     # Palavra reservada "ENQUANTO"
@@ -16,7 +16,8 @@ token_patterns = [
     (r'REAL', 'KW- REAL'),                                             # Palavra reservada "REAL"
     (r'INTEIRO', 'KW- INTEIRO'),                                       # Palavra reservada "INTEIRO"
     (r'ALGORITMO', 'KW- ALGORITMO'),                                   # Palavra reservada "ALGORITMO"
-    (r'DECLARACAO', 'KW- DECLARACAO'),                                 # Palavra reservada "DECLARACAO"
+    (r'DECLARACOES', 'KW- DECLARACOES'),                                 # Palavra reservada "DECLARACOES"
+    (r'INT', 'KW- INT'),                                 # Palavra reservada "INT"
     (r'\d+', 'NUMERO'),                                                # Números inteiros
     (r'\(', 'ABRE_PARENTESES'),                                        # Parêntese esquerdo
     (r'\)', 'FECHA_PARENTESES'),                                       # Parêntese direito
@@ -33,6 +34,7 @@ token_patterns = [
     (r'E', 'Operador booleano'),                                       # Operador booleano
     (r'OU', 'Operador booleano'),                                      # Operador booleano
     (r'\s+', 'ESPACO_EM_BRANCO'),                                      # Espaços em branco
+    (r'[a-zA-Z][a-zA-Z0-9]*', 'VARIAVEL'),                             # VARIAVEL
 ]
 
 def analisar_exCodigo(exCodigo):
@@ -64,21 +66,31 @@ def analisar_exCodigo(exCodigo):
     return tokens
 
 exCodigo = """
-SE x = 5 ENTAO
-    y = 10
-    x+5 = y ##
-SENAO
-    y = 20
+:DECLARACOES
+argumento:INT
+fatorial:INT
+
+:ALGORITMO
+LER argumento
+ATRIBUIR argumento A fatorial
+SE argumento = 0 ENTAO ATRIBUIR 1 A fatorial
+ENQUANTO argumento > 1
+INICIO
+ATRIBUIR fatorial * (argumento - 1) A fatorial
+ATRIBUIR argumento - 1 A argumento
 FIM
+IMPRIMIR fatorial
 """
 
 tokens = analisar_exCodigo(exCodigo)
 
 for tipo, valor in tokens:
     if tipo == 'TOKEN_INVALIDO':
-        print(f'TOKEN INVALIDO: "{valor}"')
+        print(f'TOKEN INVALIDO: {valor}')
     else:
         print(f'Tipo: "{tipo}" --- Valor: "{valor}"')
+
+
 
 
 
