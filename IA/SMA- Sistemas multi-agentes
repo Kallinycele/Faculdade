@@ -1,1 +1,40 @@
+import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
+
+public class Agente1 extends Agent {
+
+    protected void setup() {
+        System.out.println("Agente1: Iniciando...");
+
+        addBehaviour(new OneShotBehaviour() {
+            public void action() {
+                ACLMessage mensagem = new ACLMessage(ACLMessage.INFORM);
+                mensagem.setContent("Olá, Agente2! É um prazer conhecê-lo!");
+                mensagem.addReceiver(getAID("Agente2"));
+                send(mensagem);
+                System.out.println("Agente1: Enviou uma mensagem para Agente2");
+            }
+        });
+    }
+}
+
+public class Agente2 extends Agent {
+
+    protected void setup() {
+        System.out.println("Agente2: Iniciando...");
+
+        addBehaviour(new CyclicBehaviour() {
+            public void action() {
+                ACLMessage mensagem = receive();
+                if (mensagem != null) {
+                    String conteudo = mensagem.getContent();
+                    System.out.println("Agente2: Recebeu a mensagem: '" + conteudo + "'");
+                } else {
+                    block();
+                }
+            }
+        });
+    }
+}
 
